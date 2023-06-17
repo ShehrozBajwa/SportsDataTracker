@@ -1,3 +1,4 @@
+from dotenv import dotenv_values
 from serpapi import GoogleSearch
 import json
 
@@ -24,9 +25,8 @@ def get_game_winner(api_response):
 
 def get_game_result(query):
     # Set up SerpApi client
-    f = open("credentials.json")
-    data = json.load(f)
-    api_key = data[1]["api_token"]
+    key = dotenv_values(".env")
+    api_key = key["API_KEY"]
     params = {
         "q": query,
         "hl": "en",  # Set the language to English
@@ -42,7 +42,4 @@ def get_game_result(query):
         winner = get_game_winner(result)
     except:
         winner = ""
-    f.close()
     return winner
-
-get_game_result("vef")
