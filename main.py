@@ -6,10 +6,12 @@ from datetime import datetime
 
 url = "https://www.covers.com/sport/odds"
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+    'Accept-Language': 'en-CA,en;q=0.9'}
 
 sports= [("nfl-liveOdds", 13, 4), ("ncaaf-liveOdds", 13, 4) , ("nba-liveOdds", 13, 4), ("ncaab-liveOdds", 13, 4), ("nhl-liveOdds", 13, 3), ("mlb-liveOdds", 13, 3), ("bundesliga-liveOdds", 13, 2), ("champions-leagueLiveOdds", 13, 2) 
          , ("europa-league-liveOdds", 13, 2), ("serie-a-liveOdds", 13, 2), ("la-liga-liveOdds", 13, 2), ("ligue-1-liveOdds", 13, 2), ("mls-liveOdds", 9, 2), ("premier-league-liveOdds", 13, 2), ("cfl-liveOdds", 13, 3), ("wnba-liveOdds", 13, 2)]
+arb_sports = ["nfl-liveOdds","ncaaf-liveOdds", "nba-liveOdds" ,"ncaab-liveOdds", "mlb-liveOdds", "cfl-liveOdds", "wnba-liveOdds"]
 
 picks = []
 
@@ -84,7 +86,18 @@ def getGames():
                 teams_div = soup2.find_all('div', class_='__teams __awaiting')
                 date_div = soup2.find_all('div', class_='__date')
                 odds_table = soup2.find_all('td', class_='covers-CoversOdss-oddsTd')
-                for j in range(0, len(teams_div)//sports[i][2]):
+
+                start = 0
+                end = 0
+                if (sports[i][0] in arb_sports):
+                    start = 0
+                    end = len(teams_div)//sports[i][2]
+                    counter1 = 0
+                else:
+                    start = len(teams_div)//sports[i][2]
+                    end = len(teams_div)
+                    counter1 = start * sports[i][1]
+                for j in range(start, end):
                     homeOdds = {}
                     awayOdds = {}
                     # Find all the team elements within the __teams container
@@ -106,6 +119,9 @@ def getGames():
                             if len(checkMoneyLine) == 1:
                                 awayOdds[odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip()] = [bookmaker, away_team_name, home_team_name, sports[i][0]]
                                 homeOdds[odds_table[counter1].find('div', {'class':'__homeOdds'}).find('div', {'class': 'American __american'}).text.strip()] = [bookmaker, home_team_name, away_team_name, sports[i][0]]
+                            else:
+                                awayOdds[(odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip()).split()[-1]] = [bookmaker, away_team_name, home_team_name, sports[i][0]]
+                                homeOdds[(odds_table[counter1].find('div', {'class':'__homeOdds'}).find('div', {'class': 'American __american'}).text.strip()).split()[-1]] = [bookmaker, home_team_name, away_team_name, sports[i][0]]
                         counter1 = counter1 + 1
                     if len(homeOdds) >= 1:
                         homeARB, arbOdd, added = isOverpriced(homeOdds)
@@ -124,7 +140,7 @@ def getGames():
                         if added == True:
                             picks.append([homeARB, 1, formatted_date]) 
                         if added1 == True:
-                            picks.append([awayARB, 1, formatted_date])  
+                            picks.append([awayARB, 1, formatted_date])
                     awayOdds.clear()
                     homeOdds.clear()
             else:

@@ -24,7 +24,9 @@ def get_game_winner(api_response):
 
 def get_game_result(query):
     # Set up SerpApi client
-    api_key = "711abfe14a8a3561ec93468f24109817e786d20a332a5565ac8bf561d369fdcc"
+    f = open("credentials.json")
+    data = json.load(f)
+    api_key = data[1]["api_token"]
     params = {
         "q": query,
         "hl": "en",  # Set the language to English
@@ -40,5 +42,7 @@ def get_game_result(query):
         winner = get_game_winner(result)
     except:
         winner = ""
-
+    f.close()
     return winner
+
+get_game_result("vef")
