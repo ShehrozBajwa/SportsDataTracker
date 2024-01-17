@@ -26,7 +26,7 @@ def get_game_winner(api_response):
 
 def get_game_result(query):
     # Set up SerpApi client
-    key = dotenv_values("SportsDataTracker\.env")
+    key = dotenv_values(".env")
     api_key = key["API_KEY"]
     params = {
         "q": query,
