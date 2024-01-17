@@ -2,6 +2,7 @@ from dotenv import dotenv_values
 from serpapi import GoogleSearch
 import json
 
+
 def get_game_winner(api_response):
     game_spotlight = api_response["sports_results"]
     stage = game_spotlight["game_spotlight"]["stage"]

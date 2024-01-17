@@ -45,3 +45,4 @@ sheet_name = "Bet Picks"
 column_name = "8"  # Update with the column name or index where "Result" is located
 
 check_missing_results(sheet_name, column_name)
+

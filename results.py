@@ -4,6 +4,7 @@ from main import getGames
 import re
 from datetime import datetime
 
+
 # Define the scope and credentials
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 credentials = ServiceAccountCredentials.from_json_keyfile_name('SportsDataTracker\credentials.json', scope)
