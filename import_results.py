@@ -6,7 +6,7 @@ from datetime import datetime
 def check_missing_results(sheet_name, column_name):
     # Set up Google Sheets API credentials
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    credentials = ServiceAccountCredentials.from_json_keyfile_name("SportsDataTracker\credentials.json", scope)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
     client = gspread.authorize(credentials)
 
     # Open the specified sheet
