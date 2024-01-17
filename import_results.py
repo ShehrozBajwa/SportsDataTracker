@@ -6,7 +6,7 @@ from datetime import datetime
 def check_missing_results(sheet_name, column_name):
     # Set up Google Sheets API credentials
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    credentials = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name("SportsDataTracker\credentials.json", scope)
     client = gspread.authorize(credentials)
 
     # Open the specified sheet
@@ -35,7 +35,7 @@ def check_missing_results(sheet_name, column_name):
                     winner = get_game_result(f"{team} vs {against} score {date}")
                     
                     # Update the "Result" column based on the winner
-                    if winner == team:
+                    if winner in team:
                         sheet.update_cell(i, int(column_name), "TRUE")
                     elif winner != "":
                         sheet.update_cell(i, int(column_name), "FALSE")

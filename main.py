@@ -115,11 +115,14 @@ def getGames():
                     for k in range(0, sports[i][1]):
                         if int(odds_table[counter1].get('data-date')) > 0:
                             bookmaker = odds_table[counter1].get('data-book')
-                            checkMoneyLine = odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip().split()
-                            if len(checkMoneyLine) == 1:
+                            try:
+                                checkMoneyLine = odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip().split()
+                            except:
+                                checkMoneyLine = None
+                            if checkMoneyLine != None and len(checkMoneyLine) == 1:
                                 awayOdds[odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip()] = [bookmaker, away_team_name, home_team_name, sports[i][0]]
                                 homeOdds[odds_table[counter1].find('div', {'class':'__homeOdds'}).find('div', {'class': 'American __american'}).text.strip()] = [bookmaker, home_team_name, away_team_name, sports[i][0]]
-                            else:
+                            elif checkMoneyLine != None:
                                 awayOdds[(odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip()).split()[-1]] = [bookmaker, away_team_name, home_team_name, sports[i][0]]
                                 homeOdds[(odds_table[counter1].find('div', {'class':'__homeOdds'}).find('div', {'class': 'American __american'}).text.strip()).split()[-1]] = [bookmaker, home_team_name, away_team_name, sports[i][0]]
                         counter1 = counter1 + 1
@@ -127,14 +130,14 @@ def getGames():
                         homeARB, arbOdd, added = isOverpriced(homeOdds)
                         awayARB, arbOdd1, added1 = isOverpriced(awayOdds)
                     
-                    if (check_arbitrage_opportunity(arbOdd, arbOdd1)):
-                        if date == "Today":
-                            formatted_date = datetime.today().strftime('%Y-%m-%d')
-                        else:
-                            formatted_date = datetime.strptime(f"2023 {date}", "%Y %b %d").strftime("%Y-%m-%d")
-                        optimal_odd1, optimal_odd2 = optimal_bets(arbOdd, arbOdd1)
-                        picks.append([homeARB, optimal_odd1, formatted_date])
-                        picks.append([awayARB, optimal_odd2, formatted_date])
+                    # if (check_arbitrage_opportunity(arbOdd, arbOdd1)):
+                    #     if date == "Today":
+                    #         formatted_date = datetime.today().strftime('%Y-%m-%d')
+                    #     else:
+                    #         formatted_date = datetime.strptime(f"2023 {date}", "%Y %b %d").strftime("%Y-%m-%d")
+                    #     optimal_odd1, optimal_odd2 = optimal_bets(arbOdd, arbOdd1)
+                    #     picks.append([homeARB, optimal_odd1, formatted_date])
+                    #     picks.append([awayARB, optimal_odd2, formatted_date])
                     if (date == "Today"):
                         formatted_date = datetime.today().strftime('%Y-%m-%d')
                         if added == True:
