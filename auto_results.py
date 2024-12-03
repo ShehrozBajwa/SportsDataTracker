@@ -5,7 +5,7 @@ import json
 
 def get_game_winner(api_response):
     game_spotlight = api_response["sports_results"]
-    stage = game_spotlight["game_spotlight"]["stage"]
+    stage = game_spotlight["game_spotlight"]["status"]
     status = stage
     if stage != "FT" and stage != "Final" and stage != "Full-time" and status != "FT" and status != "Final" and status != "Full-time":
         return ""

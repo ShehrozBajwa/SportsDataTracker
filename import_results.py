@@ -35,7 +35,7 @@ def check_missing_results(sheet_name, column_name):
                     winner = get_game_result(f"{team} vs {against} score {date}")
                     
                     # Update the "Result" column based on the winner
-                    if winner in team:
+                    if winner == team:
                         sheet.update_cell(i, int(column_name), "TRUE")
                     elif winner != "":
                         sheet.update_cell(i, int(column_name), "FALSE")

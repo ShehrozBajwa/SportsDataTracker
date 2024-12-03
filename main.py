@@ -76,75 +76,79 @@ def getGames():
     added1 = False
     for i in range(0,len(sports)):
             counter1 = 0
-            sport = soup.find(id=sports[i][0])
-            currSport = sport.find('a')
-            if currSport != None:
-                sportURL = currSport.get("href")
-                specificSport = requests.get("https://www.covers.com" + sportURL, headers=headers)
-                soup2 = BeautifulSoup(specificSport.text, 'html5lib')
-                teams_div = soup2.find_all('div', class_='__teams __awaiting')
-                date_div = soup2.find_all('div', class_='__date')
-                odds_table = soup2.find_all('td', class_='covers-CoversOdss-oddsTd')
-
-                start = 0
-                end = 0
-                if (sports[i][0] in arb_sports):
+            try:
+                sport = soup.find(id=sports[i][0])
+            except:
+                sport = None
+            if sport != None:
+                currSport = sport.find('a')
+            try:
+                if currSport != None:
+                    sportURL = currSport.get("href")
+                    specificSport = requests.get("https://www.covers.com" + sportURL, headers=headers)
+                    soup2 = BeautifulSoup(specificSport.text, 'html5lib')
+                    teams_div = soup2.find_all('div', class_='__teams __awaiting')
+                    date_div = soup2.find_all('div', class_='__date')
+                    odds_table = soup2.find_all('td', class_='covers-CoversOdss-oddsTd')
                     start = 0
-                    end = len(teams_div)//sports[i][2]
-                    counter1 = 0
-                else:
-                    start = len(teams_div)//sports[i][2]
-                    end = len(teams_div)
-                    counter1 = start * sports[i][1]
-                for j in range(start, end):
-                    homeOdds = {}
-                    awayOdds = {}
-                    # Find all the team elements within the __teams container
-                    team_elements = teams_div[j].find_all('div', class_='__away')
+                    end = 0
+                    if (sports[i][0] in arb_sports):
+                        start = 0
+                        end = len(teams_div)//sports[i][2]
+                        counter1 = 0
+                    else:
+                        start = len(teams_div)//sports[i][2]
+                        end = len(teams_div)
+                        counter1 = start * sports[i][1]
+                    for j in range(start, end):
+                        homeOdds = {}
+                        awayOdds = {}
+                        # Find all the team elements within the __teams container
+                        team_elements = teams_div[j].find_all('div', class_='__away')
 
 
-                    # Extract the full team names by accessing the desired index
-                    away_team_name = team_elements[0].find('a').find('div', class_='__teamLogo').find('img')['title']
+                        # Extract the full team names by accessing the desired index
+                        away_team_name = team_elements[0].find('a').find('div', class_='__teamLogo').find('img')['title']
 
-                    home_team_name = teams_div[j].find('div', class_='__home').find('a').find('div', class_='__teamLogo').find('img')['title']
-                    try:
-                        date = date_div[j].text.strip()[:-1]
-                    except:
-                        date = "Today"
-                    for k in range(0, sports[i][1]):
-                        if int(odds_table[counter1].get('data-date')) > 0:
-                            bookmaker = odds_table[counter1].get('data-book')
-                            try:
-                                checkMoneyLine = odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip().split()
-                            except:
-                                checkMoneyLine = None
-                            if checkMoneyLine != None and len(checkMoneyLine) == 1:
-                                awayOdds[odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip()] = [bookmaker, away_team_name, home_team_name, sports[i][0]]
-                                homeOdds[odds_table[counter1].find('div', {'class':'__homeOdds'}).find('div', {'class': 'American __american'}).text.strip()] = [bookmaker, home_team_name, away_team_name, sports[i][0]]
-                            elif checkMoneyLine != None:
-                                awayOdds[(odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip()).split()[-1]] = [bookmaker, away_team_name, home_team_name, sports[i][0]]
-                                homeOdds[(odds_table[counter1].find('div', {'class':'__homeOdds'}).find('div', {'class': 'American __american'}).text.strip()).split()[-1]] = [bookmaker, home_team_name, away_team_name, sports[i][0]]
-                        counter1 = counter1 + 1
-                    if len(homeOdds) >= 1:
-                        homeARB, arbOdd, added = isOverpriced(homeOdds)
-                        awayARB, arbOdd1, added1 = isOverpriced(awayOdds)
-                    
-                    # if (check_arbitrage_opportunity(arbOdd, arbOdd1)):
-                    #     if date == "Today":
-                    #         formatted_date = datetime.today().strftime('%Y-%m-%d')
-                    #     else:
-                    #         formatted_date = datetime.strptime(f"2023 {date}", "%Y %b %d").strftime("%Y-%m-%d")
-                    #     optimal_odd1, optimal_odd2 = optimal_bets(arbOdd, arbOdd1)
-                    #     picks.append([homeARB, optimal_odd1, formatted_date])
-                    #     picks.append([awayARB, optimal_odd2, formatted_date])
-                    if (date == "Today"):
-                        formatted_date = datetime.today().strftime('%Y-%m-%d')
-                        if added == True:
-                            picks.append([homeARB, 1, formatted_date]) 
-                        if added1 == True:
-                            picks.append([awayARB, 1, formatted_date])
-                    awayOdds.clear()
-                    homeOdds.clear()
-            else:
+                        home_team_name = teams_div[j].find('div', class_='__home').find('a').find('div', class_='__teamLogo').find('img')['title']
+                        try:
+                            date = date_div[j].text.strip()[:-1]
+                        except:
+                            date = "Today"
+                        for k in range(0, sports[i][1]):
+                            if int(odds_table[counter1].get('data-date')) > 0:
+                                bookmaker = odds_table[counter1].get('data-book')
+                                try:
+                                    checkMoneyLine = odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip().split()
+                                except:
+                                    checkMoneyLine = None
+                                if checkMoneyLine != None and len(checkMoneyLine) == 1:
+                                    awayOdds[odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip()] = [bookmaker, away_team_name, home_team_name, sports[i][0]]
+                                    homeOdds[odds_table[counter1].find('div', {'class':'__homeOdds'}).find('div', {'class': 'American __american'}).text.strip()] = [bookmaker, home_team_name, away_team_name, sports[i][0]]
+                                elif checkMoneyLine != None:
+                                    awayOdds[(odds_table[counter1].find('div', {'class':'__awayOdds'}).find('div', {'class': '__american'}).text.strip()).split()[-1]] = [bookmaker, away_team_name, home_team_name, sports[i][0]]
+                                    homeOdds[(odds_table[counter1].find('div', {'class':'__homeOdds'}).find('div', {'class': 'American __american'}).text.strip()).split()[-1]] = [bookmaker, home_team_name, away_team_name, sports[i][0]]
+                            counter1 = counter1 + 1
+                        if len(homeOdds) >= 1:
+                            homeARB, arbOdd, added = isOverpriced(homeOdds)
+                            awayARB, arbOdd1, added1 = isOverpriced(awayOdds)
+                        
+                        # if (check_arbitrage_opportunity(arbOdd, arbOdd1)):
+                        #     if date == "Today":
+                        #         formatted_date = datetime.today().strftime('%Y-%m-%d')
+                        #     else:
+                        #         formatted_date = datetime.strptime(f"2023 {date}", "%Y %b %d").strftime("%Y-%m-%d")
+                        #     optimal_odd1, optimal_odd2 = optimal_bets(arbOdd, arbOdd1)
+                        #     picks.append([homeARB, optimal_odd1, formatted_date])
+                        #     picks.append([awayARB, optimal_odd2, formatted_date])
+                        if (date == "Today"):
+                            formatted_date = datetime.today().strftime('%Y-%m-%d')
+                            if added == True:
+                                picks.append([homeARB, 1, formatted_date])
+                            if added1 == True:
+                                picks.append([awayARB, 1, formatted_date])
+                        awayOdds.clear()
+                        homeOdds.clear()
+            except:
                 continue
     return picks
