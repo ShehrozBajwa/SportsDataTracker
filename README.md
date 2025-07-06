@@ -12,3 +12,6 @@ This project is a sports betting picks tracker that scrapes odds data from 'cove
 - Utilizes Google Sheets API to update a spreadsheet with betting picks
 - Checks for duplicate entries to avoid redundancy
 - Automatically adjusts column widths in the spreadsheet for better readability
+
+
+https://docs.google.com/spreadsheets/d/1bsLiNrK7h1-V03a66tQJ8qUDO-LU9mQKe9M1uwwULBg/edit?usp=sharing
